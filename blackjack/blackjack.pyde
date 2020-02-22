@@ -1,20 +1,26 @@
+from cards import Card
+cards = []
+
 def setup():
-    size(1080, 720)
-    textSize(60)
+    fullScreen()
+    setupCards()
 
-letter = ''
-
+def setupCards():
+    global cards
+    for value in ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']:
+        for suit in ['C', 'D', 'H', 'S']:
+            cards.append(Card(value, suit))
+    shuffle(cards)
+            
+def shuffle(arr):
+    for i in range(len(arr)):
+        swapIdx = int(random(0, 52))
+        cards[i], cards[swapIdx] = cards[swapIdx], cards[i]
+        
 def keyPressed():
-    global letter
-    if type(key) == type(u'a') and ord(key) < 256:
-        if ord(key) == 8:
-            letter = letter[:-1]
-        else:
-            letter += key
-            print(key, letter)
-    
+    global cards
+    shuffle(cards)
+        
 def draw():
-    global letter
-    frameRate(12)
-    background(0)
-    text(letter, mouseX, mouseY)
+    global cards
+    cards[0].display(0, 0)
