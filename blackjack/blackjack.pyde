@@ -26,6 +26,7 @@ def passFunction():
 def setup():
     global player, dealer, backgroundImage, players, georgiaFont
     fullScreen()
+    frameRate(120)
     textSize(20)
     setupCards()
     player = Player((width / 2 - 100, height - 200), 5000)
