@@ -15,7 +15,6 @@ class Dealer(Player):
         self.cards = []
         self.cardRevealed = False
         self.playing = True
-    
         
     def display(self):
         global faceDownCard
@@ -27,8 +26,9 @@ class Dealer(Player):
                 image(faceDownCard, displayX + spacing, displayY)
             elif len(self.cards) > 0:
                 startIdx = 0
-                fill(0, 0, 0)
-                text(self.getHandStatus(), displayX, displayY + 27 + faceDownCard.height)
+                if not self.isBust(): 
+                    fill(255)
+                    text(self.getHandStatus(), displayX, displayY + 27 + faceDownCard.height)
             for i in range(startIdx, len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX - (i-1)*spacing, displayY)
