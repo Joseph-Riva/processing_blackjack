@@ -14,6 +14,8 @@ class Dealer(Player):
         self.handPosition = handPosition
         self.cards = []
         self.cardRevealed = False
+        self.playing = True
+    
         
     def display(self):
         global faceDownCard

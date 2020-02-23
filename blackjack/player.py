@@ -32,6 +32,14 @@ class Player(object):
                 total -= 10
         return total
     
+    def handRank(self):
+        handValue = self.handValue()
+        if handValue > 21:
+            return 0
+        if handValue == 21 and len(self.cards) == 2:
+            return 22
+        return handValue
+    
     def getHandStatus(self):
         handTotal = self.handValue()
         if len(self.cards) == 2 and handTotal == 21:
@@ -42,6 +50,15 @@ class Player(object):
         else:
             return "Hand total: " + str(self.handValue())
         
+    def takeTurn(self, deck):
+        def keyPressed():
+            if key == 'h':
+                self.cards.append(deck.pop())
+            elif key == 's':
+                self.playing = False
+        while(self.playing and not self.isBust()):
+            pass
+        
     def display(self):
         displayX, displayY = self.handPosition
         spacing = self.cards[0].img.width + 20
@@ -49,8 +66,8 @@ class Player(object):
             for i in range(len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
-        fill(255)
-        text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
+            fill(255)
+            text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
                 
