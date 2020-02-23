@@ -1,11 +1,8 @@
 from tapsdk import TapSDK, TapInputMode
 from tapsdk.models import AirGestures
-from flask import Flask
-app = Flask(__name__)
 
 tap_instance = []
 tap_identifiers = []
-data = []
 
 
 def on_connect(identifier, name, fw):
@@ -34,8 +31,11 @@ def on_mouse_event(identifier, dx, dy, isMouse):
 
 
 def on_tap_event(identifier, tapcode):
-    data.append(tapcode)
-    print(tapcode)
+    print(identifier, str(tapcode))
+    if int(tapcode) == 17:
+        sequence = [500, 200, 500, 500, 500, 200]
+        tap_instance.send_vibration_sequence(sequence, identifier)
+
 
 def on_air_gesture_event(identifier, air_gesture):
     print(" Air gesture: " + AirGestures(air_gesture).name)
@@ -59,24 +59,23 @@ def on_raw_sensor_data(identifier, raw_sensor_data):
     if raw_sensor_data.GetPoint(1).z > 2000 and raw_sensor_data.GetPoint(2).z > 2000 and raw_sensor_data.GetPoint(3).z > 2000 and raw_sensor_data.GetPoint(4).z > 2000:
         tap_instance.set_input_mode(TapInputMode("controller"), identifier)
 
-tap_instance
-tap_instance = TapSDK()
-tap_instance.run()
-tap_instance.register_connection_events(on_connect)
-tap_instance.register_disconnection_events(on_disconnect)
-tap_instance.register_mouse_events(on_mouse_event)
-tap_instance.register_tap_events(on_tap_event)
-tap_instance.register_raw_data_events(on_raw_sensor_data)
-tap_instance.register_air_gesture_events(on_air_gesture_event)
-tap_instance.register_air_gesture_state_events(on_air_gesture_state_event)
-tap_instance.set_input_mode(TapInputMode("controller"))
 
-@app.route('/')
-def hello_world():
-    global data
-    temp = data
-    data = []
-    return str(temp)
+def main():
+    global tap_instance
+    tap_instance = TapSDK()
+    tap_instance.run()
+    tap_instance.register_connection_events(on_connect)
+    tap_instance.register_disconnection_events(on_disconnect)
+    tap_instance.register_mouse_events(on_mouse_event)
+    tap_instance.register_tap_events(on_tap_event)
+    tap_instance.register_raw_data_events(on_raw_sensor_data)
+    tap_instance.register_air_gesture_events(on_air_gesture_event)
+    tap_instance.register_air_gesture_state_events(on_air_gesture_state_event)
+    tap_instance.set_input_mode(TapInputMode("controller"))
+
+    while True:
+        pass
+
 
 if __name__ == "__main__":
     main()

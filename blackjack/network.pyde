@@ -1,13 +1,24 @@
 add_library('net')
 myClient = None
+        
+def load():
+    global myClients
+    myClients.append(Client(this, "localhost", 5000))
+    myClients[-1].write("GET / HTTP/1.1\r\n")
+    myClients[-1].write("\r\n")
+    if(myClients[0].available() > 0):
+        dataIn = myClients[0].readString()
+        if('[]' not in dataIn):
+            try:
+                value = dataIn[dataIn.index('[') + 1:-1]
+            except:
+                pass
+            print(value)
+        myClients.pop(0)
+
 def setup():
-    global myClient
-    print("12")
-    myClient = Client(this, "127.0.0.1", 5000)
-    myClient.write("GET / HTTP/1.0\r\n")
-    print("hi")
+    global myClients
+    myClients = []
+
 def draw():
-    global myClient
-    if(myClient.available > 0):
-        dataIn = myClient.read()
-    print(dataIn)
+    load()
