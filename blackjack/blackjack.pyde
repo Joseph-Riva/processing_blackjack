@@ -66,12 +66,17 @@ def drawBlackjack():
     
 def hitPlayer():
     global deck, player
-    player.cards.append(deck.pop())
+    card = deck.pop()
+    player.cards.append(card)
+    giveCard(player, card)
     
 def hitDealer():
     global deck, dealer
     if(dealer.handValue() < 17):
-        dealer.cards.append(deck.pop())
+        card = deck.pop()
+        dealer.cards.append(card)
+        giveCard(dealer, card)
+    
 
 def playOneGame():
     global players, deck, dealer
@@ -95,7 +100,9 @@ def keyPressed():
                 return
             player = players[currentPlayer]
         if key == 'h':
-            player.cards.append(deck.pop())
+            card = deck.pop()
+            player.cards.append(card)
+            giveCard(player, card)
             if player.isBust() or player.handValue() == 21:
                 currentPlayer += 1
                 if currentPlayer == len(players):
@@ -117,13 +124,24 @@ def drawIntroScreen():
         text("To start a game, press 'S'", width //2, 500)
         textAlign(BASELINE)
         textFont(georgiaFont)
-        
+def drawDeck():
+    faceDownCard = loadImage('green_back.png')
+    aspectRatio = faceDownCard.width/faceDownCard.height
+    faceDownCard.resize(100, 100*aspectRatio)
+    imageH = height//2-(height*.32)
+    for i in range(5):
+        image(faceDownCard, (width//2+(width*.25)) -(2*i), imageH)
+def giveCard(player, card):
+    return
+    
+    
 def draw():
     load()
     global player, dealer, backgroundImage, temporaryDraw
-    background(backgroundImage)
+    #background(backgroundImage)
     drawIntroScreen()
     if currentPlayer is not None:
+        drawDeck()
         player.display()
         dealer.display()
     for i in range(len(temporaryDraw) - 1,-1,-1):
