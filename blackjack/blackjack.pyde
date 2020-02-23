@@ -328,24 +328,40 @@ add_library('net')
 myClient = None
 
 def processTapInput(combo):
-    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw
-    if currentPlayer is not None:
-        player = players[currentPlayer]
-        if player.isBust() or player.handValue() == 21 or combo == 33:
-            currentPlayer += 1
-            if currentPlayer == len(players) - 1:
-                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw, playerTurn, betting, started
+    if players:
+        player = players[0]
+    if not started:
+        if combo:
+            started = True
+            players[0].money = 5000
+    elif betting:
+        if combo & 0b01110:
+            playerTurn = True
+            player.money -= player.bet
+            betting = False
+            temporaryDraw = []
+            shuffleDeck()
+            dealToPlayers()
+            if players[0].handRank() == 22:
                 dealerWait = int(frameRate*2.5)
                 dealer.cardRevealed = True
-                takeDealerTurn()
-                currentPlayer = None
-                return
+                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+            currentPlayer = 0
+        if combo == 64:
+            if player.bet == 1:
+                player.bet += 499
+            else:
+                player.bet += 500
+            player.bet = min(player.bet, player.money)
+        if combo == 128:
+            player.bet -= 500
+            player.bet = max(player.bet, 1)
+    elif playerTurn:
+        if currentPlayer is not None:
             player = players[currentPlayer]
-        if combo & 0b01110:
-            giveCard(player)
-            if player.isBust() or player.handValue() == 21:
-                if player.isBust():
-                    temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+            if player.isBust() or player.handValue() == 21 or combo == 32:
+                playerTurn = False
                 currentPlayer += 1
                 if currentPlayer == len(players) - 1:
                     temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
@@ -354,16 +370,20 @@ def processTapInput(combo):
                     takeDealerTurn()
                     currentPlayer = None
                     return
-
-    elif combo == 2:
-        temporaryDraw = []
-        shuffleDeck()
-        dealToPlayers()
-        if players[0].handRank() == 22:
-            dealerWait = int(frameRate*2.5)
-            dealer.cardRevealed = True
-            temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
-        currentPlayer = 0
+                player = players[currentPlayer]
+            if combo & 0b01110:
+                giveCard(player)
+                if player.isBust() or player.handValue() == 21:
+                    if player.isBust():
+                        temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+                    currentPlayer += 1
+                    if currentPlayer == len(players) - 1:
+                        temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+                        dealerWait = int(frameRate*2.5)
+                        dealer.cardRevealed = True
+                        takeDealerTurn()
+                        currentPlayer = None
+                        return
 
 def load():
     global myClients, players, dealer, deck, currentPlayer
