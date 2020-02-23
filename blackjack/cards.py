@@ -1,3 +1,18 @@
+valToFace = {1: 'A', 11: 'J', 12: 'Q', 13: 'K'}
+faceToVal = {'A': 1, 'J': 11, 'Q': 12, 'K': 13}
+
+def valueToFace(cardVal):
+    global valToFace
+    if cardVal in valToFace:
+        return valToFace[cardVal]
+    return str(cardVal)
+
+def faceToValue(cardFace):
+    global faceToVal
+    if cardFace in faceToVal:
+        return faceToVal[cardFace]
+    return int(cardVal) 
+
 class Card(object):
     def __init__(self, value, suit):
         '''
@@ -8,9 +23,9 @@ class Card(object):
         self.suit = suit
         self.fileName = self.value + self.suit + '.png'
         self.img = loadImage(self.fileName)
+        aspectRatio = self.img.width/self.img.height
+        self.img.resize(100, 100*aspectRatio)
         
     def display(self, x = 0, y = 0):
-        aspectRatio = 1056/691
-        self.img.resize(100, 100*aspectRatio)
         image(self.img, x, y)
         
