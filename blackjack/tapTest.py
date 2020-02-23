@@ -28,8 +28,12 @@ def on_disconnect(identifier):
 def on_mouse_event(identifier, dx, dy, isMouse):
     if isMouse:
         print(dx**2 + dy**2)
-        if dx**2 + dy**2 > 10000 and 33 not in data:
+        if dx**2 > dy**2  and dx**2 > 5000 and 33 not in data:
             data.append(33)
+        else if dy**2 > dx**2  and dy > 300 and 34 not in data:
+            data.append(34)
+        else if dy**2 > dx**2  and dy < -300 and 35 not in data:
+            data.append(35)
     else:
         pass
         # print("Air: ", str(dx), str(dy))
