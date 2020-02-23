@@ -91,7 +91,7 @@ def drawVictory():
     fill(255)
     textSize(45)
     textAlign(CENTER, CENTER)
-    text("Win!", width/2-40, height/2, boxW, boxH)
+    text("You Win!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
     
 def drawDefeat():
@@ -101,7 +101,7 @@ def drawDefeat():
     fill(255)
     textSize(35)
     textAlign(CENTER, CENTER)
-    text("Defeat!", width/2-40, height/2, boxW, boxH)
+    text("Dealer Wins!", width/2-40, height/2)
     textAlign(BASELINE, BASELINE)
 
 def drawPush():
@@ -250,7 +250,7 @@ def drawIntroScreen():
         text("Blackjack!", width // 2, height/2)
         textSize(30)
         fill(255)
-        text("To start a game, press 'S'", width //2, (height/2)+150)
+        text("To start a game, tap any fingers.", width //2, (height/2)+150)
         textAlign(BASELINE)
         textFont(georgiaFont)
 
@@ -291,7 +291,13 @@ def drawMoney():
         textSize(40)
         text("Your Money: $"+ str(player.money), 200, 100)
         text("Your Bet: $" + str(player.bet), 200, 160)
-        textAlign(BASELINE)
+        textAlign(CENTER, BASELINE)
+        if betting:
+            textSize(80)
+            text("Place Your Bet!", width/2, height/2 - 50)
+            textSize(40)
+            text("Swipe up to increase your bet", width/2, height/2+50)
+            text("and swipe down to decrease it.", width/2, height/2+100)
     
 def drawingFunction():
     global player, dealer, backgroundImage, temporaryDraw, counter, playerTurn
@@ -307,7 +313,7 @@ def drawingFunction():
             fill(255)
             textAlign(CENTER)
             textSize(30)
-            text("Hit or Stand?", player.handPosition[0]+90, player.handPosition[1]-25)
+            text("Hit (tap) or Stand (swipe right)?", player.handPosition[0]+90, player.handPosition[1]-25)
             textAlign(BASELINE)
     if currentPlayer is not None or temporaryDraw:
         drawDeck()
