@@ -44,7 +44,8 @@ def setupCards():
             cardsFull.append(Card(value, suit))
 
 def shuffleDeck():
-    global deck
+    global deck, playerTurn
+    playerTurn = True
     deck = cardsFull[:]
     for i in range(len(deck)):
         swapIdx = int(random(0, len(deck)))
@@ -151,10 +152,11 @@ def takeDealerTurn():
                 temporaryDraw.append({'draw': drawPush, 'time': int(2.5*frameRate)})
 
 def keyPressed():
-    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw
+    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw, playerTurn
     if currentPlayer is not None:
         player = players[currentPlayer]
         if player.isBust() or player.handValue() == 21 or key == 's':
+            playerTurn = False
             currentPlayer += 1
             if currentPlayer == len(players) - 1:
                 temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
@@ -179,6 +181,7 @@ def keyPressed():
                     return
 
     elif key == 's':
+        playerTurn = True
         temporaryDraw = []
         shuffleDeck()
         dealToPlayers()
@@ -189,8 +192,9 @@ def keyPressed():
         currentPlayer = 0
         
 def drawIntroScreen():
-    global currentPlayer, georgiaFont, temporaryDraw
+    global currentPlayer, georgiaFont, temporaryDraw, playerTurn
     if currentPlayer is None and not temporaryDraw:
+        playerTurn = False;
         textSize(50)
         fill(0)
         textAlign(CENTER)
@@ -214,8 +218,8 @@ def drawDeck():
         
 def giveCard(player):
     global deck, temporaryDraw, faceDownCard, playerTurn
-    playerTurn = not player is dealer
-    print(playerTurn)
+    #playerTurn = not player is dealer
+    #print(playerTurn)
     card = deck.pop()
     player.cards.append(card)
     if player is dealer:
@@ -241,11 +245,12 @@ def drawingFunction():
         counter -= 1
     background(backgroundImage)
     drawIntroScreen()
-    if playerTurn : 
+    print(playerTurn)
+    if playerTurn: 
             fill(255)
             textAlign(CENTER)
             textSize(30)
-            text("Hit or Stand?", player.handPosition[0]+30, player.handPosition[1]-25)
+            text("Hit or Stand?", player.handPosition[0]+90, player.handPosition[1]-25)
             textAlign(BASELINE)
     if currentPlayer is not None or temporaryDraw:
         drawDeck()
