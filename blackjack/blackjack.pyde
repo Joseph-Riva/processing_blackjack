@@ -48,6 +48,6 @@ def keyPressed():
         
 def draw():
     global player, backgroundImage
-    print(backgroundImage)
+    #print(backgroundImage)
     background(backgroundImage)
     player.display()
