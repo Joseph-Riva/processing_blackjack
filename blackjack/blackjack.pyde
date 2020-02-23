@@ -13,6 +13,7 @@ players = []
 currentPlayer = None
 georgiaFont = None
 faceDownCard = None
+playerTurn = True
 
 temporaryDraw = []
 dealerWait = 0
@@ -212,7 +213,9 @@ def drawDeck():
         image(faceDownCard, (width//2+(width*.25)) -(2*i), imageH)
         
 def giveCard(player):
-    global deck, temporaryDraw, faceDownCard
+    global deck, temporaryDraw, faceDownCard, playerTurn
+    playerTurn = not player is dealer
+    print(playerTurn)
     card = deck.pop()
     player.cards.append(card)
     if player is dealer:
@@ -230,7 +233,7 @@ def giveCard(player):
     
 
 def drawingFunction():
-    global player, dealer, backgroundImage, temporaryDraw, counter
+    global player, dealer, backgroundImage, temporaryDraw, counter, playerTurn
     if counter == 0:
         load()
         counter = 10
@@ -238,6 +241,12 @@ def drawingFunction():
         counter -= 1
     background(backgroundImage)
     drawIntroScreen()
+    if playerTurn : 
+            fill(255)
+            textAlign(CENTER)
+            textSize(30)
+            text("Hit or Stand?", player.handPosition[0]+30, player.handPosition[1]-25)
+            textAlign(BASELINE)
     if currentPlayer is not None or temporaryDraw:
         drawDeck()
         player.display()
