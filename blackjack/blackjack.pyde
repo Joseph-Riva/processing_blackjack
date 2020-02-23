@@ -142,7 +142,7 @@ add_library('net')
 myClient = None
         
 def load():
-    global myClients
+    global myClients, players, dealer, deck, currentPlayer
     myClients.append(Client(this, "localhost", 5000))
     myClients[-1].write("GET / HTTP/1.1\r\n")
     myClients[-1].write("\r\n")
@@ -151,17 +151,22 @@ def load():
         if('[]' not in dataIn):
             try:
                 value = dataIn[dataIn.index('[') + 1:-1]
-                if (int(value) == 1):
-                    player.cards.append(deck.pop())
-                    if player.isBust() or player.handValue() == 21:
+                if currentPlayer is not None:
+                    player = players[currentPlayer]
+                    if (int(value) == 1):
+                        player.cards.append(deck.pop())
+                        if player.isBust() or player.handValue() == 21:
+                            if player.isBust():
+                                temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+                            currentPlayer += 1
+                            if currentPlayer == len(players):
+                                currentPlayer = None
+                    if(int(value) == 2):
                         currentPlayer += 1
                         if currentPlayer == len(players):
                             currentPlayer = None
-                if(int(value) == 2):
-                    print("here")
-                    currentPlayer += 1
-                    if currentPlayer == len(players):
-                        currentPlayer = None
+                            return
+                        player = players[currentPlayer]
                 return
             except:
                 pass
