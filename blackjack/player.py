@@ -57,18 +57,7 @@ class Player(object):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
             fill(255)
-            if(self.getHandStatus() == "Bust!" or self.getHandStatus == "Blackjack!"):
-                boxW = 200
-                boxH = 100
-                fill(255)
-                rect(width/2-40, height/2, boxW, boxH, 7)
-                fill(255, 40, 40)
-                textAlign(CENTER, CENTER)
-                text("You " + self.getHandStatus(), width/2-40, height/2, boxW, boxH)
-                textAlign(BASELINE)
-            else: 
-                fill(255)
-                text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
+            text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
                 
