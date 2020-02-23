@@ -3,6 +3,7 @@ from player import Player, fontsize
 from dealer import Dealer
 
 cardsFull = []
+counter = 0
 deck = []
 player = None
 backgroundImage = None
@@ -124,8 +125,12 @@ def drawIntroScreen():
         textFont(georgiaFont)
         
 def draw():
-    load()
-    global player, dealer, backgroundImage, temporaryDraw
+    global player, dealer, backgroundImage, temporaryDraw, counter
+    if counter == 0:
+        load()
+        counter = 10
+    else:
+        counter -= 1
     background(backgroundImage)
     drawIntroScreen()
     if currentPlayer is not None or temporaryDraw:
@@ -153,7 +158,13 @@ def load():
                 value = dataIn[dataIn.index('[') + 1:-1]
                 if currentPlayer is not None:
                     player = players[currentPlayer]
-                    if (int(value) == 1):
+                    if int(value) == 2:
+                        currentPlayer += 1
+                        if currentPlayer == len(players):
+                            currentPlayer = None
+                        else:
+                            player = players[currentPlayer]
+                    if int(value) == 1:
                         player.cards.append(deck.pop())
                         if player.isBust() or player.handValue() == 21:
                             if player.isBust():
@@ -161,13 +172,8 @@ def load():
                             currentPlayer += 1
                             if currentPlayer == len(players):
                                 currentPlayer = None
-                    if(int(value) == 2):
-                        currentPlayer += 1
-                        if currentPlayer == len(players):
-                            currentPlayer = None
-                            return
-                        player = players[currentPlayer]
-                return
             except:
                 pass
+        myClients.pop(0)
+    while myClients and not myClients[0].active():
         myClients.pop(0)
