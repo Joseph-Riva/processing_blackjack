@@ -56,17 +56,17 @@ class Player(object):
             for i in range(len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
-        fill(255)
-        if(self.getHandStatus() == "Bust!" or self.getHandStatus == "Blackjack!"):
-            boxW = 200
-            boxH = 100
             fill(255)
-            rect(width/2-40, height/2, boxW, boxH, 7)
-            fill(255, 40, 40)
-            text("You " + self.getHandStatus(), width/2-40+40, height/2+(boxH/2+10))
-        else: 
-            fill(255)
-            text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
+            if(self.getHandStatus() == "Bust!" or self.getHandStatus == "Blackjack!"):
+                boxW = 200
+                boxH = 100
+                fill(255)
+                rect(width/2-40, height/2, boxW, boxH, 7)
+                fill(255, 40, 40)
+                text("You " + self.getHandStatus(), width/2-40+40, height/2+(boxH/2+10))
+            else: 
+                fill(255)
+                text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
                 
