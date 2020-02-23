@@ -72,7 +72,6 @@ def drawBlackjack():
     text("Blackjack!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
     
-<<<<<<< HEAD
 def drawVictory():
     boxW = 200
     boxH = 100
@@ -103,9 +102,6 @@ def drawPush():
     text("Push!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
     
-=======
-
->>>>>>> 4b28ac463cdce91e6637fb21a8e6fef9581cf854
 def drawBust():
     boxW = 200
     boxH = 100
@@ -202,10 +198,7 @@ def drawIntroScreen():
         text("To start a game, press 'S'", width //2, 500)
         textAlign(BASELINE)
         textFont(georgiaFont)
-<<<<<<< HEAD
-        
-def drawingFunction():
-=======
+
 def drawDeck():
     faceDownCard = loadImage('green_back.png')
     aspectRatio = faceDownCard.width/faceDownCard.height
@@ -222,8 +215,8 @@ def giveCard(player, card):
         mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1])) 
     temporaryDraw.append({'draw': mvCard, 'time': int(frameRate*1)})
     
-def draw():
->>>>>>> 4b28ac463cdce91e6637fb21a8e6fef9581cf854
+
+def drawingFunction():
     global player, dealer, backgroundImage, temporaryDraw, counter
     if counter == 0:
         load()
