@@ -10,7 +10,7 @@ dealer = None
 
 def setup():
     global player, dealer, backgroundImage
-    size(1920, 955)
+    fullScreen()
     textSize(20)
     setupCards()
     player = Player((width / 2 - 100, height - 200), 500)
@@ -20,6 +20,8 @@ def setup():
     dealToPlayer(dealer)
     backgroundImage = loadImage('table.png')
     backgroundImage.resize(width, height)
+    myFont = createFont("Georgia", 30)
+    textFont(myFont)
 
 def setupCards():
     global cardsFull
@@ -39,13 +41,16 @@ def dealToPlayer(player):
     global deck
     player.cards = deck[:2]
     deck = deck[2:]
+    
 def hitPlayer():
     global deck, player
     player.cards.append(deck.pop())
+    
 def hitDealer():
     global deck, dealer
     if(dealer.handValue() < 17):
         dealer.cards.append(deck.pop())
+        
 def keyPressed():
     global player, dealer
     if key == 'h':

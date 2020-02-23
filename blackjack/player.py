@@ -44,13 +44,13 @@ class Player(object):
         
     def display(self):
         displayX, displayY = self.handPosition
+        spacing = self.cards[0].img.width + 20
         if self.cards:
-            spacing = self.cards[0].img.width + 20
             for i in range(len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
-        fill(0, 0, 0)
-        text(self.getHandStatus(), displayX, displayY - 25)
+        fill(255)
+        text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
                 
