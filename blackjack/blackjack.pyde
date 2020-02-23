@@ -112,8 +112,8 @@ def keyPressed():
         currentPlayer = 0
         
 def drawIntroScreen():
-    global currentPlayer, georgiaFont
-    if currentPlayer is None:
+    global currentPlayer, georgiaFont, temporaryDraw
+    if currentPlayer is None and not temporaryDraw:
         textSize(50)
         fill(0)
         textAlign(CENTER)
@@ -128,7 +128,7 @@ def draw():
     global player, dealer, backgroundImage, temporaryDraw
     background(backgroundImage)
     drawIntroScreen()
-    if currentPlayer is not None:
+    if currentPlayer is not None or temporaryDraw:
         player.display()
         dealer.display()
     for i in range(len(temporaryDraw) - 1,-1,-1):
