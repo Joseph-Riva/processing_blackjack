@@ -44,9 +44,7 @@ def hitPlayer():
     player.cards.append(deck.pop())
 def hitDealer():
     global deck, dealer
-    print(dealer.cards)
     if(dealer.handValue() < 17):
-        print("appending")
         dealer.cards.append(deck.pop())
 def keyPressed():
     global player, dealer
