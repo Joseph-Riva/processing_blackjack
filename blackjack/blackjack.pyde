@@ -1,17 +1,22 @@
 from cards import Card
 from player import Player, fontsize
+from dealer import Dealer
+
 cardsFull = []
 deck = []
 player = None
 backgroundImage = None
+dealer = None
 
 def setup():
-    global player, backgroundImage
+    global player, dealer, backgroundImage
     size(1920, 955)
     textSize(20)
     setupCards()
     player = Player((width / 2 - 100, height - 200), 500)
-    dealToPlayer()
+    dealer = Dealer((width / 2 - 100, 200))
+    dealToPlayer(player)
+    dealToPlayer(dealer)
     backgroundImage = loadImage('table.png')
     backgroundImage.resize(width, height)
 
@@ -29,9 +34,8 @@ def shuffleDeck():
         swapIdx = int(random(0, len(deck)))
         deck[i], deck[swapIdx] = deck[swapIdx], deck[i]
         
-def dealToPlayer():
-    global deck, player
-    shuffleDeck()
+def dealToPlayer(player):
+    global deck
     player.cards = deck[:2]
     deck = deck[2:]
     
@@ -40,13 +44,19 @@ def hitPlayer():
     player.cards.append(deck.pop())
     
 def keyPressed():
-    global player
+    global player, dealer
     if key == 'h':
         hitPlayer()
+    elif key == 's':
+        dealer.cardRevealed = True
     else:
-        dealToPlayer()
+        shuffleDeck()
+        dealer.cardRevealed = False
+        dealToPlayer(dealer)
+        dealToPlayer(player)
         
 def draw():
-    global player, backgroundImage
+    global player, dealer, backgroundImage
     background(backgroundImage)
     player.display()
+    dealer.display()

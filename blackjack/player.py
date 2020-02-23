@@ -34,7 +34,7 @@ class Player(object):
         
     def display(self):
         displayX, displayY = self.handPosition
-        if self.cards is not None:
+        if self.cards:
             spacing = self.cards[0].img.width + 20
             for i in range(len(self.cards)):
                 card = self.cards[i]
