@@ -37,7 +37,6 @@ class Player(object):
         if len(self.cards) == 2 and handTotal == 21:
             return "Blackjack!"
         elif handTotal > 21:
-            fill(255, 40, 40)
             return "Bust!"
         else:
             return "Hand total: " + str(self.handValue())
@@ -50,7 +49,15 @@ class Player(object):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
         fill(255)
-        text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
+        if(self.getHandStatus() == "Bust!" or self.getHandStatus == "Blackjack!"):
+            boxW = 200
+            boxH = 100
+            fill(255)
+            rect(width/2-40, height/2, boxW, boxH, 7)
+            fill(255, 40, 40)
+            text("You " + self.getHandStatus(), width/2-40+40, height/2+(boxH/2+10))
+        else: 
+            text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
                 
