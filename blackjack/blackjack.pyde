@@ -15,6 +15,7 @@ def setup():
     setupCards()
     player = Player((width / 2 - 100, height - 200), 500)
     dealer = Dealer((width / 2 - 100, 200))
+    shuffleDeck()
     dealToPlayer(player)
     dealToPlayer(dealer)
     backgroundImage = loadImage('table.png')
@@ -38,15 +39,20 @@ def dealToPlayer(player):
     global deck
     player.cards = deck[:2]
     deck = deck[2:]
-    
 def hitPlayer():
     global deck, player
     player.cards.append(deck.pop())
-    
+def hitDealer():
+    global deck, dealer
+    print(dealer.cards)
+    if(dealer.handValue() < 17):
+        print("appending")
+        dealer.cards.append(deck.pop())
 def keyPressed():
     global player, dealer
     if key == 'h':
         hitPlayer()
+        hitDealer()
     elif key == 's':
         dealer.cardRevealed = True
     else:
