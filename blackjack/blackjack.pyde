@@ -190,6 +190,7 @@ def keyPressed():
             started = True
             betting = True
             players[0].money = 5000
+            players[0].bet = 500
     elif betting:
         if key == 'h':
             player.money -= player.bet
@@ -347,6 +348,7 @@ def processTapInput(combo):
             started = True
             betting = True
             players[0].money = 5000
+            players[0].bet = 500
     elif betting:
         if combo & 0b01110:
             player.money -= player.bet
