@@ -77,6 +77,11 @@ def keyPressed():
             player = players[currentPlayer]
         if key == 'h':
             player.cards.append(deck.pop())
+            if player.isBust() or player.handValue() == 21:
+                currentPlayer += 1
+                if currentPlayer == len(players):
+                    currentPlayer = None
+                    return
     elif key == 's':
         shuffleDeck()
         dealToPlayers()
