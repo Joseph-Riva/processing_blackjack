@@ -5,7 +5,7 @@ for i in range(len(img.pixels)):
         for j in range(i-3, i):
             img.pixels[i] = color(100*noise(i), 100*noise(i), 100*(noise(i)))
     else:
-        img.pixels[i] = color(8, 124, 95)
+        img.pixels[i] = color(8, 124, 80)
 img.updatePixels()
 #image(img,0,0)
 #save("table.png")
@@ -15,5 +15,5 @@ def setup():
 
 def draw():
     image(img, 0, 0)
-    save("table.png")
+    save("../data/table.png")
     exit()
