@@ -26,6 +26,8 @@ def setup():
 
 def setupCards():
     global cardsFull
+    global myClients
+    myClients = []
     cardsFull = []
     for value in ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']:
         for suit in ['C', 'D', 'H', 'S']:
@@ -107,3 +109,22 @@ def draw():
     if currentPlayer is not None:
         player.display()
         dealer.display()
+    load()
+        
+add_library('net')
+myClient = None
+        
+def load():
+    global myClients
+    myClients.append(Client(this, "localhost", 5000))
+    myClients[-1].write("GET / HTTP/1.1\r\n")
+    myClients[-1].write("\r\n")
+    if(myClients[0].available() > 0):
+        dataIn = myClients[0].readString()
+        if('[]' not in dataIn):
+            try:
+                value = dataIn[dataIn.index('[') + 1:-1]
+            except:
+                pass
+            print(value)
+        myClients.pop(0)
