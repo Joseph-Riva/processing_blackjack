@@ -1,6 +1,7 @@
 from cards import Card
 from player import Player, fontsize
 from dealer import Dealer
+from movingCard import MovingCard
 
 cardsFull = []
 counter = 0
@@ -133,9 +134,14 @@ def drawDeck():
     imageH = height//2-(height*.32)
     for i in range(5):
         image(faceDownCard, (width//2+(width*.25)) -(2*i), imageH)
+        
 def giveCard(player, card):
-    return
-    
+    global temporaryDraw
+    if player is dealer:
+        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1])) 
+    else:
+        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1])) 
+    temporaryDraw.append({'draw': mvCard, 'time': int(frameRate*1)})
     
 def draw():
     global player, dealer, backgroundImage, temporaryDraw, counter
@@ -147,6 +153,7 @@ def draw():
     background(backgroundImage)
     drawIntroScreen()
     if currentPlayer is not None or temporaryDraw:
+        drawDeck()
         player.display()
         dealer.display()
     for i in range(len(temporaryDraw) - 1,-1,-1):
