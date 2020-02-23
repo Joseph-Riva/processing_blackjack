@@ -13,7 +13,7 @@ players = []
 currentPlayer = None
 georgiaFont = None
 faceDownCard = None
-playerTurn = True
+playerTurn = False
 betting = True
 started = False
 
@@ -48,7 +48,6 @@ def setupCards():
 
 def shuffleDeck():
     global deck, playerTurn
-    playerTurn = True
     deck = cardsFull[:]
     for i in range(len(deck)):
         swapIdx = int(random(0, len(deck)))
@@ -137,22 +136,22 @@ def takeDealerTurn():
             if dealer.handRank() == 0:
                 temporaryDraw.append({'draw': drawBust, 'time': int(1*frameRate)})
                 dealerWait = int(2.5*frameRate)
-                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(2.51*frameRate)})
+                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(2.5*frameRate)})
         else:
             if curRank == 0 or curRank < toBeat:
                 if toBeat == 22:
                     players[0].money += 3*players[0].bet // 2
                 else:
                     players[0].money += 2*players[0].bet
-                    temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
+                    temporaryDraw.append({'draw': drawVictory, 'time': int(1.5*frameRate)})
             elif curRank > toBeat:
                 temporaryDraw.append({'draw': drawDefeat, 'time': int(2.5*frameRate)})
             else:
                 temporaryDraw.append({'draw': drawPush, 'time': int(2.5*frameRate)})
                 players[0].money += players[0].bet
             players[0].bet = min(500, players[0].money)
-            dealerWait = int(2.5*frameRate)
-            temporaryDraw.append({'draw': resetAfterTime, 'time': int(2.51*frameRate)})
+            dealerWait = int(4.51*frameRate)
+            temporaryDraw.append({'draw': resetAfterTime, 'time': int(4.51*frameRate)})
 
 def resetAfterTime():
     global dealerWait, betting, playerTurn, players
@@ -164,6 +163,7 @@ def resetAfterTime():
         playerTurn = False
         players[0].bet = min(500, players[0].money)
         if players[0].bet == 0:
+            betting = False
             dealerWait = int(frameRate*4.9)
             temporaryDraw.append({'draw': gameOver, 'time': int(5*frameRate)})
             
@@ -188,10 +188,10 @@ def keyPressed():
     if not started:
         if key == 's':
             started = True
+            betting = True
             players[0].money = 5000
     elif betting:
         if key == 'h':
-            playerTurn = True
             player.money -= player.bet
             betting = False
             temporaryDraw = []
@@ -272,17 +272,21 @@ def giveCard(player):
     player.cards.append(card)
     if player is dealer:
         if len(player.cards) > 1:
-            mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1]), card.makeVisible)
+            mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1]), [card.makeVisible])
         else:
             if faceDownCard is None:
                 faceDownCard = loadImage('green_back.png')
                 aspectRatio = faceDownCard.width/faceDownCard.height
                 faceDownCard.resize(100, 100*aspectRatio)
-            mvCard = MovingCard(faceDownCard, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1]), card.makeVisible)
+            mvCard = MovingCard(faceDownCard, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1]), [card.makeVisible])
     else:
-        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1]), card.makeVisible) 
+        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1]), [card.makeVisible, startPlayerTurn]) 
     temporaryDraw.append({'draw': mvCard, 'time': int(frameRate*1)})
-    
+
+def startPlayerTurn():
+    global playerTurn
+    playerTurn = True
+
 def drawMoney():
     global player, started
     if started:
@@ -298,6 +302,7 @@ def drawMoney():
             textSize(40)
             text("Swipe up to increase your bet", width/2, height/2+50)
             text("and swipe down to decrease it.", width/2, height/2+100)
+            text("Tap to confirm!", width/2, height/2+150)
     
 def drawingFunction():
     global player, dealer, backgroundImage, temporaryDraw, counter, playerTurn
@@ -340,10 +345,10 @@ def processTapInput(combo):
     if not started:
         if combo:
             started = True
+            betting = True
             players[0].money = 5000
     elif betting:
         if combo & 0b01110:
-            playerTurn = True
             player.money -= player.bet
             betting = False
             temporaryDraw = []

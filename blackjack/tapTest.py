@@ -30,9 +30,9 @@ def on_mouse_event(identifier, dx, dy, isMouse):
         print(dy)
         if dx**2 > dy**2  and dx**2 > 5000 and 32 not in data:
             data.append(32)
-        elif dy**2 > dx**2  and dy < -75 and 64 not in data:
+        elif dy**2 > dx**2  and dy < -45 and 64 not in data:
             data.append(64)
-        elif dy**2 > dx**2  and dy > 75 and 128 not in data:
+        elif dy**2 > dx**2  and dy > 45 and 128 not in data:
             data.append(128)
     else:
         pass
@@ -40,7 +40,8 @@ def on_mouse_event(identifier, dx, dy, isMouse):
 
 
 def on_tap_event(identifier, tapcode):
-    data.append(tapcode)
+    if not (32 in data or 64 in data or 128 in data):
+        data.append(tapcode)
     print(tapcode)
 
 def on_air_gesture_event(identifier, air_gesture):

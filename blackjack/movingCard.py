@@ -17,6 +17,7 @@ class MovingCard:
         self.iteration += 1
         image(self.img, self.curPos.x, self.curPos.y)    
         if self.iteration == self.numIterations:
-            self.final()
+            for cb in self.final:
+                cb()
             
         
