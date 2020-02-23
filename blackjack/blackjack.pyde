@@ -69,12 +69,14 @@ def keyPressed():
     global players, dealer, deck, currentPlayer
     if currentPlayer is not None:
         player = players[currentPlayer]
-        if key == 'h':
-            player.cards.append(deck.pop())
-        elif key == 's':
+        if player.isBust() or player.handValue() == 21 or key == 's':
             currentPlayer += 1
             if currentPlayer == len(players):
                 currentPlayer = None
+                return
+            player = players[currentPlayer]
+        if key == 'h':
+            player.cards.append(deck.pop())
     elif key == 's':
         shuffleDeck()
         dealToPlayers()

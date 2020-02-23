@@ -50,19 +50,10 @@ class Player(object):
         else:
             return "Hand total: " + str(self.handValue())
         
-    def takeTurn(self, deck):
-        def keyPressed():
-            if key == 'h':
-                self.cards.append(deck.pop())
-            elif key == 's':
-                self.playing = False
-        while(self.playing and not self.isBust()):
-            pass
-        
     def display(self):
         displayX, displayY = self.handPosition
-        spacing = self.cards[0].img.width + 20
         if self.cards:
+            spacing = self.cards[0].img.width + 20
             for i in range(len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
