@@ -71,6 +71,7 @@ def drawBlackjack():
     text("Blackjack!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
     
+<<<<<<< HEAD
 def drawVictory():
     boxW = 200
     boxH = 100
@@ -101,6 +102,9 @@ def drawPush():
     text("Push!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
     
+=======
+
+>>>>>>> 4b28ac463cdce91e6637fb21a8e6fef9581cf854
 def drawBust():
     boxW = 200
     boxH = 100
@@ -162,7 +166,9 @@ def keyPressed():
                 return
             player = players[currentPlayer]
         if key == 'h':
-            player.cards.append(deck.pop())
+            card = deck.pop()
+            player.cards.append(card)
+            giveCard(player, card)
             if player.isBust() or player.handValue() == 21:
                 if player.isBust():
                     temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
@@ -195,8 +201,23 @@ def drawIntroScreen():
         text("To start a game, press 'S'", width //2, 500)
         textAlign(BASELINE)
         textFont(georgiaFont)
+<<<<<<< HEAD
         
 def drawingFunction():
+=======
+def drawDeck():
+    faceDownCard = loadImage('green_back.png')
+    aspectRatio = faceDownCard.width/faceDownCard.height
+    faceDownCard.resize(100, 100*aspectRatio)
+    imageH = height//2-(height*.32)
+    for i in range(5):
+        image(faceDownCard, (width//2+(width*.25)) -(2*i), imageH)
+def giveCard(player, card):
+    return
+    
+    
+def draw():
+>>>>>>> 4b28ac463cdce91e6637fb21a8e6fef9581cf854
     global player, dealer, backgroundImage, temporaryDraw, counter
     if counter == 0:
         load()
