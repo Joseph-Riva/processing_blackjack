@@ -216,8 +216,6 @@ def drawDeck():
         
 def giveCard(player):
     global deck, temporaryDraw, faceDownCard, playerTurn
-    #playerTurn = not player is dealer
-    #print(playerTurn)
     card = deck.pop()
     player.cards.append(card)
     if player is dealer:
@@ -243,7 +241,6 @@ def drawingFunction():
         counter -= 1
     background(backgroundImage)
     drawIntroScreen()
-    print(playerTurn)
     if playerTurn: 
             fill(255)
             textAlign(CENTER)
