@@ -32,6 +32,14 @@ class Player(object):
                 total -= 10
         return total
     
+    def handRank(self):
+        handValue = self.handValue()
+        if handValue > 21:
+            return 0
+        if handValue == 21 and len(self.cards) == 2:
+            return 22
+        return handValue
+    
     def getHandStatus(self):
         handTotal = self.handValue()
         if len(self.cards) == 2 and handTotal == 21:
@@ -43,8 +51,8 @@ class Player(object):
         
     def display(self):
         displayX, displayY = self.handPosition
-        spacing = self.cards[0].img.width + 20
         if self.cards:
+            spacing = self.cards[0].img.width + 20
             for i in range(len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
@@ -57,6 +65,7 @@ class Player(object):
             fill(255, 40, 40)
             text("You " + self.getHandStatus(), width/2-40+40, height/2+(boxH/2+10))
         else: 
+            fill(255)
             text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
