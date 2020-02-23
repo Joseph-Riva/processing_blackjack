@@ -11,6 +11,8 @@ players = []
 currentPlayer = None
 georgiaFont = None
 
+temporaryDraw = []
+
 def setup():
     global player, dealer, backgroundImage, players, georgiaFont
     fullScreen()
@@ -26,6 +28,8 @@ def setup():
 
 def setupCards():
     global cardsFull
+    global myClients
+    myClients = []
     cardsFull = []
     for value in ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']:
         for suit in ['C', 'D', 'H', 'S']:
@@ -39,12 +43,26 @@ def shuffleDeck():
         deck[i], deck[swapIdx] = deck[swapIdx], deck[i]
 
 def dealToPlayers():
-    global deck, players
+    global deck, players, dealer, temporaryDraw
     for i in range(2*len(players)):
         player = players.pop(0)
         player.cards = deck[:2]
         deck = deck[2:]
         players.append(player)
+        if player.handRank() == 22:
+            if player is dealer:
+                dealer.cardRevealed = True
+            temporaryDraw.append({'draw': drawBlackjack, 'time': int(frameRate*2)})
+            
+def drawBlackjack():
+    boxW = 200
+    boxH = 100
+    fill(255)
+    rect(width/2-40, height/2, boxW, boxH, 7)
+    fill(255, 40, 40)
+    textAlign(CENTER, CENTER)
+    text("Blackjack!", width/2-40, height/2, boxW, boxH)
+    textAlign(BASELINE)
     
 def hitPlayer():
     global deck, player
@@ -91,15 +109,56 @@ def keyPressed():
 def drawIntroScreen():
     global currentPlayer, georgiaFont
     if currentPlayer is None:
-        textSize(40)
+        textSize(50)
         fill(0)
-        text("Blackjack!", width / 2 - 30*4, 200)
+        textAlign(CENTER)
+        text("Blackjack!", width // 2, 200)
+        textSize(30)
+        text("To start a game, press 'S'", width //2, 500)
+        textAlign(BASELINE)
         textFont(georgiaFont)
         
 def draw():
-    global player, dealer, backgroundImage
+    load()
+    global player, dealer, backgroundImage, temporaryDraw
     background(backgroundImage)
     drawIntroScreen()
     if currentPlayer is not None:
         player.display()
         dealer.display()
+    for i in range(len(temporaryDraw) - 1,-1,-1):
+        obj = temporaryDraw[i]
+        print(obj['time'])
+        obj['time'] -= 1
+        if not obj['time']:
+            temporaryDraw.pop(i)
+        obj['draw']()
+        
+add_library('net')
+myClient = None
+        
+def load():
+    global myClients
+    myClients.append(Client(this, "localhost", 5000))
+    myClients[-1].write("GET / HTTP/1.1\r\n")
+    myClients[-1].write("\r\n")
+    if(myClients[0].available() > 0):
+        dataIn = myClients[0].readString()
+        if('[]' not in dataIn):
+            try:
+                value = dataIn[dataIn.index('[') + 1:-1]
+                if (int(value) == 1):
+                    player.cards.append(deck.pop())
+                    if player.isBust() or player.handValue() == 21:
+                        currentPlayer += 1
+                        if currentPlayer == len(players):
+                            currentPlayer = None
+                if(int(value) == 2):
+                    print("here")
+                    currentPlayer += 1
+                    if currentPlayer == len(players):
+                        currentPlayer = None
+                return
+            except:
+                pass
+        myClients.pop(0)
