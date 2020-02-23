@@ -7,6 +7,7 @@ class Player(object):
         self.money = money
         self.cards = []
         self.playing = True
+        self.bet = money//10
         
     def isBust(self):
         value = 0

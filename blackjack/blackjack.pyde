@@ -14,6 +14,8 @@ currentPlayer = None
 georgiaFont = None
 faceDownCard = None
 playerTurn = True
+betting = True
+started = False
 
 temporaryDraw = []
 dealerWait = 0
@@ -26,7 +28,7 @@ def setup():
     fullScreen()
     textSize(20)
     setupCards()
-    player = Player((width / 2 - 100, height - 200), 500)
+    player = Player((width / 2 - 100, height - 200), 5000)
     dealer = Dealer((width / 2 - 100, 200))
     players = [player, dealer]
     backgroundImage = loadImage('table.png')
@@ -53,11 +55,15 @@ def shuffleDeck():
         deck[swapIdx].visible = False
         deck[i], deck[swapIdx] = deck[swapIdx], deck[i]
 
+def resetHands():
+    global players
+    for player in players:
+        player.cards = []
+
 def dealToPlayers():
     global deck, players, dealer, temporaryDraw
     dealer.cardRevealed = False
-    for player in players:
-        player.cards = []
+    resetHands()
     for i in range(2*len(players)):
         giveCard(players[i % len(players)])
     for player in players:
@@ -111,20 +117,9 @@ def drawBust():
     textAlign(CENTER, CENTER)
     text("Bust!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
-    
-def playOneGame():
-    global players, deck, dealer
-    for i in range(len(players)):
-        player = players.pop()
-        player.takeTurn(deck)
-        players.append(player)
-
-def bestScore():
-    global players
-    return max([player.handRank() for player in players[:-1]])
 
 def takeDealerTurn():
-    global dealer, deck, players, dealerWait, temporaryDraw
+    global dealer, deck, players, dealerWait, temporaryDraw, betting
     dealerWait -= 1
     if not dealerWait:
         toBeat = max([player.handRank() for player in players if player is not dealer])
@@ -137,34 +132,64 @@ def takeDealerTurn():
                     dealerWait = int(frameRate*2.5)
             if dealer.handRank() == 0:
                 temporaryDraw.append({'draw': drawBust, 'time': int(2.5*frameRate)})
+                if toBeat == 22:
+                    players[0].money += 3*players[0].bet // 2
+                else:
+                    players[0].money += 2*players[0].bet
+                players[0].bet = min(500, players[0].money)
+                betting = True
+                shuffleDeck()
+                resetHands()
+                playerTurn = False
         else:
             if curRank == 0 or curRank < toBeat:
                 temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
+                if toBeat == 22:
+                    players[0].money += 3*players[0].bet // 2
+                else:
+                    players[0].money += 2*players[0].bet
             elif curRank > toBeat:
                 temporaryDraw.append({'draw': drawDefeat, 'time': int(2.5*frameRate)})
             else:
                 temporaryDraw.append({'draw': drawPush, 'time': int(2.5*frameRate)})
+                players[0].money += players[0].bet
+            players[0].bet = min(500, players[0].money)
+            betting = True
+            shuffleDeck()
+            resetHands()
+            playerTurn = False
 
 def keyPressed():
-    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw, playerTurn
-    if currentPlayer is not None:
-        player = players[currentPlayer]
-        if player.isBust() or player.handValue() == 21 or key == 's':
-            playerTurn = False
-            currentPlayer += 1
-            if currentPlayer == len(players) - 1:
-                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw, playerTurn, betting, started
+    if players:
+        player = players[0]
+    if not started:
+        if key == 's':
+            started = True
+    elif betting:
+        if key == 'h':
+            playerTurn = True
+            player.money -= player.bet
+            betting = False
+            temporaryDraw = []
+            shuffleDeck()
+            dealToPlayers()
+            if players[0].handRank() == 22:
                 dealerWait = int(frameRate*2.5)
                 dealer.cardRevealed = True
-                takeDealerTurn()
-                currentPlayer = None
-                return
+                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+            currentPlayer = 0
+        if key == 'w':
+            player.bet += 500
+            player.bet = min(player.bet, player.money)
+        if key == 's':
+            player.bet -= 500
+            player.bet = max(player.bet, 0)
+    else:
+        if currentPlayer is not None:
             player = players[currentPlayer]
-        if key == 'h':
-            giveCard(player)
-            if player.isBust() or player.handValue() == 21:
-                if player.isBust():
-                    temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+            if player.isBust() or player.handValue() == 21 or key == 's':
+                playerTurn = False
                 currentPlayer += 1
                 if currentPlayer == len(players) - 1:
                     temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
@@ -173,21 +198,25 @@ def keyPressed():
                     takeDealerTurn()
                     currentPlayer = None
                     return
+                player = players[currentPlayer]
+            if key == 'h':
+                giveCard(player)
+                if player.isBust() or player.handValue() == 21:
+                    if player.isBust():
+                        temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+                    currentPlayer += 1
+                    if currentPlayer == len(players) - 1:
+                        temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+                        dealerWait = int(frameRate*2.5)
+                        dealer.cardRevealed = True
+                        takeDealerTurn()
+                        currentPlayer = None
+                        return
 
-    elif key == 's':
-        playerTurn = True
-        temporaryDraw = []
-        shuffleDeck()
-        dealToPlayers()
-        if players[0].handRank() == 22:
-            dealerWait = int(frameRate*2.5)
-            dealer.cardRevealed = True
-            temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
-        currentPlayer = 0
         
 def drawIntroScreen():
-    global currentPlayer, georgiaFont, temporaryDraw, playerTurn
-    if currentPlayer is None and not temporaryDraw:
+    global georgiaFont, playerTurn, started
+    if not started:
         playerTurn = False;
         textSize(100)
         fill(0)
@@ -229,12 +258,15 @@ def giveCard(player):
     temporaryDraw.append({'draw': mvCard, 'time': int(frameRate*1)})
     
 def drawMoney():
-    global player
-    fill(255)
-    textAlign(CENTER)
-    textSize(40)
-    text("Your Money: $"+ str(player.money), 200, 100)
-    textAlign(BASELINE)
+    global player, started
+    if started:
+        fill(255)
+        textAlign(CENTER)
+        textSize(40)
+        text("Your Money: $"+ str(player.money), 200, 100)
+        text("Your Bet: $" + str(player.bet), 200, 160)
+        textAlign(BASELINE)
+    
 def drawingFunction():
     global player, dealer, backgroundImage, temporaryDraw, counter, playerTurn
     if counter == 0:
@@ -317,7 +349,6 @@ def load():
         if('[]' not in dataIn):
             try:
                 value = dataIn[dataIn.index('[') + 1:-1]
-                print(type(value))
                 processTapInput(int(value))
             except:
                 print('boo')

@@ -24,7 +24,7 @@ class Dealer(Player):
             startIdx = 1
             if len(self.cards) > 0 and not self.cardRevealed and self.cards[0].visible:
                 image(faceDownCard, displayX + spacing, displayY)
-            elif len(self.cards) > 0:
+            elif len(self.cards) > 0 and self.cardRevealed and self.cards[0].visible:
                 startIdx = 0
                 if not self.isBust(): 
                     fill(255)
