@@ -44,11 +44,13 @@ def shuffleDeck():
 
 def dealToPlayers():
     global deck, players, dealer, temporaryDraw
+    dealer.cardRevealed = False
     for i in range(2*len(players)):
         player = players.pop(0)
         player.cards = deck[:2]
         deck = deck[2:]
         players.append(player)
+    for player in players:
         if player.handRank() == 22:
             if player is dealer:
                 dealer.cardRevealed = True
@@ -62,17 +64,18 @@ def drawBlackjack():
     fill(255, 40, 40)
     textAlign(CENTER, CENTER)
     text("Blackjack!", width/2-40, height/2, boxW, boxH)
-    textAlign(BASELINE)
+    textAlign(BASELINE, BASELINE)
     
-def hitPlayer():
-    global deck, player
-    player.cards.append(deck.pop())
+def drawBust():
+    boxW = 200
+    boxH = 100
+    fill(255)
+    rect(width/2-40, height/2, boxW, boxH, 7)
+    fill(255, 40, 40)
+    textAlign(CENTER, CENTER)
+    text("Bust!", width/2-40, height/2, boxW, boxH)
+    textAlign(BASELINE, BASELINE)
     
-def hitDealer():
-    global deck, dealer
-    if(dealer.handValue() < 17):
-        dealer.cards.append(deck.pop())
-
 def playOneGame():
     global players, deck, dealer
     for i in range(len(players)):
@@ -97,6 +100,8 @@ def keyPressed():
         if key == 'h':
             player.cards.append(deck.pop())
             if player.isBust() or player.handValue() == 21:
+                if player.isBust():
+                    temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
                 currentPlayer += 1
                 if currentPlayer == len(players):
                     currentPlayer = None
@@ -128,7 +133,6 @@ def draw():
         dealer.display()
     for i in range(len(temporaryDraw) - 1,-1,-1):
         obj = temporaryDraw[i]
-        print(obj['time'])
         obj['time'] -= 1
         if not obj['time']:
             temporaryDraw.pop(i)

@@ -21,6 +21,7 @@ class Card(object):
         '''
         self.face = str(value)
         self.value = faceToValue(self.face)
+        print(self.face, self.value)
         self.suit = suit
         self.fileName = self.face + self.suit + '.png'
         self.img = loadImage(self.fileName)
