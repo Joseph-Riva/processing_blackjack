@@ -5,7 +5,7 @@ class Player(object):
     def __init__(self, handPosition, money):
         self.handPosition = handPosition
         self.money = money
-        self.cards = None
+        self.cards = []
         self.playing = True
         
     def isBust(self):

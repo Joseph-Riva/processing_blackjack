@@ -26,7 +26,12 @@ class Card(object):
         self.img = loadImage(self.fileName)
         aspectRatio = self.img.width/self.img.height
         self.img.resize(100, 100*aspectRatio)
+        self.visible = False
+        
+    def makeVisible(self):
+        self.visible = True
         
     def display(self, x = 0, y = 0):
-        image(self.img, x, y)
+        if self.visible:
+            image(self.img, x, y)
         

@@ -12,6 +12,7 @@ dealer = None
 players = []
 currentPlayer = None
 georgiaFont = None
+faceDownCard = None
 
 temporaryDraw = []
 dealerWait = 0
@@ -46,16 +47,17 @@ def shuffleDeck():
     deck = cardsFull[:]
     for i in range(len(deck)):
         swapIdx = int(random(0, len(deck)))
+        deck[i].visible = False
+        deck[swapIdx].visible = False
         deck[i], deck[swapIdx] = deck[swapIdx], deck[i]
 
 def dealToPlayers():
     global deck, players, dealer, temporaryDraw
     dealer.cardRevealed = False
+    for player in players:
+        player.cards = []
     for i in range(2*len(players)):
-        player = players.pop(0)
-        player.cards = deck[:2]
-        deck = deck[2:]
-        players.append(player)
+        giveCard(players[i % len(players)])
     for player in players:
         if player.handRank() == 22:
             if player is dealer:
@@ -129,8 +131,8 @@ def takeDealerTurn():
     if not dealerWait:
         toBeat = max([player.handRank() for player in players if player is not dealer])
         curRank = dealer.handRank()
-        if curRank < 17 and curRank > 0 and toBeat > 0:
-            dealer.cards.append(deck.pop())
+        if curRank < 17 and curRank > 0 and toBeat > 0 and not toBeat == 22:
+            giveCard(dealer)
             for tempDraw in temporaryDraw:
                 if tempDraw['draw'] == takeDealerTurn:
                     tempDraw['time'] = int(frameRate*2.51)
@@ -146,7 +148,6 @@ def takeDealerTurn():
                 temporaryDraw.append({'draw': drawDefeat, 'time': int(2.5*frameRate)})
             else:
                 temporaryDraw.append({'draw': drawPush, 'time': int(2.5*frameRate)})
-                
 
 def keyPressed():
     global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw
@@ -163,9 +164,7 @@ def keyPressed():
                 return
             player = players[currentPlayer]
         if key == 'h':
-            card = deck.pop()
-            player.cards.append(card)
-            giveCard(player, card)
+            giveCard(player)
             if player.isBust() or player.handValue() == 21:
                 if player.isBust():
                     temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
@@ -183,8 +182,9 @@ def keyPressed():
         shuffleDeck()
         dealToPlayers()
         if players[0].handRank() == 22:
-            dealerWait = 0
-            takeDealerTurn()
+            dealerWait = int(frameRate*2.5)
+            dealer.cardRevealed = True
+            temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
         currentPlayer = 0
         
 def drawIntroScreen():
@@ -200,19 +200,32 @@ def drawIntroScreen():
         textFont(georgiaFont)
 
 def drawDeck():
-    faceDownCard = loadImage('green_back.png')
+    global faceDownCard
+    if faceDownCard is None:
+        faceDownCard = loadImage('green_back.png')
+        aspectRatio = faceDownCard.width/faceDownCard.height
+        faceDownCard.resize(100, 100*aspectRatio)
     aspectRatio = faceDownCard.width/faceDownCard.height
     faceDownCard.resize(100, 100*aspectRatio)
     imageH = height//2-(height*.32)
     for i in range(5):
         image(faceDownCard, (width//2+(width*.25)) -(2*i), imageH)
         
-def giveCard(player, card):
-    global temporaryDraw
+def giveCard(player):
+    global deck, temporaryDraw, faceDownCard
+    card = deck.pop()
+    player.cards.append(card)
     if player is dealer:
-        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1])) 
+        if len(player.cards) > 1:
+            mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1]), card.makeVisible)
+        else:
+            if faceDownCard is None:
+                faceDownCard = loadImage('green_back.png')
+                aspectRatio = faceDownCard.width/faceDownCard.height
+                faceDownCard.resize(100, 100*aspectRatio)
+            mvCard = MovingCard(faceDownCard, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]-(len(player.cards)-2)*(card.img.width+20),player.handPosition[1]), card.makeVisible)
     else:
-        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1])) 
+        mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1]), card.makeVisible) 
     temporaryDraw.append({'draw': mvCard, 'time': int(frameRate*1)})
     
 

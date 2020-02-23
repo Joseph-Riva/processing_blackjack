@@ -22,7 +22,7 @@ class Dealer(Player):
         if self.cards:
             spacing = self.cards[0].img.width + 20
             startIdx = 1
-            if len(self.cards) > 0 and not self.cardRevealed:
+            if len(self.cards) > 0 and not self.cardRevealed and self.cards[0].visible:
                 image(faceDownCard, displayX + spacing, displayY)
             elif len(self.cards) > 0:
                 startIdx = 0
