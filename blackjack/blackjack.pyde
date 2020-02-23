@@ -11,6 +11,8 @@ players = []
 currentPlayer = None
 georgiaFont = None
 
+temporaryDraw = []
+
 def setup():
     global player, dealer, backgroundImage, players, georgiaFont
     fullScreen()
@@ -39,12 +41,26 @@ def shuffleDeck():
         deck[i], deck[swapIdx] = deck[swapIdx], deck[i]
 
 def dealToPlayers():
-    global deck, players
+    global deck, players, dealer, temporaryDraw
     for i in range(2*len(players)):
         player = players.pop(0)
         player.cards = deck[:2]
         deck = deck[2:]
         players.append(player)
+        if player.handRank() == 22:
+            if player is dealer:
+                dealer.cardRevealed = True
+            temporaryDraw.append({'draw': drawBlackjack, 'time': int(frameRate*2)})
+            
+def drawBlackjack():
+    boxW = 200
+    boxH = 100
+    fill(255)
+    rect(width/2-40, height/2, boxW, boxH, 7)
+    fill(255, 40, 40)
+    textAlign(CENTER, CENTER)
+    text("Blackjack!", width/2-40, height/2, boxW, boxH)
+    textAlign(BASELINE)
     
 def hitPlayer():
     global deck, player
@@ -101,9 +117,16 @@ def drawIntroScreen():
         textFont(georgiaFont)
         
 def draw():
-    global player, dealer, backgroundImage
+    global player, dealer, backgroundImage, temporaryDraw
     background(backgroundImage)
     drawIntroScreen()
     if currentPlayer is not None:
         player.display()
         dealer.display()
+    for i in range(len(temporaryDraw) - 1,-1,-1):
+        obj = temporaryDraw[i]
+        print(obj['time'])
+        obj['time'] -= 1
+        if not obj['time']:
+            temporaryDraw.pop(i)
+        obj['draw']()
