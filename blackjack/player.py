@@ -63,7 +63,9 @@ class Player(object):
                 fill(255)
                 rect(width/2-40, height/2, boxW, boxH, 7)
                 fill(255, 40, 40)
-                text("You " + self.getHandStatus(), width/2-40+40, height/2+(boxH/2+10))
+                textAlign(CENTER, CENTER)
+                text("You " + self.getHandStatus(), width/2-40, height/2, boxW, boxH)
+                textAlign(BASELINE)
             else: 
                 fill(255)
                 text(self.getHandStatus(), displayX - spacing*2, displayY + 50)

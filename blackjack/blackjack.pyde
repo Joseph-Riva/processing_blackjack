@@ -91,9 +91,13 @@ def keyPressed():
 def drawIntroScreen():
     global currentPlayer, georgiaFont
     if currentPlayer is None:
-        textSize(40)
+        textSize(50)
         fill(0)
-        text("Blackjack!", width / 2 - 30*4, 200)
+        textAlign(CENTER)
+        text("Blackjack!", width // 2, 200)
+        textSize(30)
+        text("To start a game, press 'S'", width //2, 500)
+        textAlign(BASELINE)
         textFont(georgiaFont)
         
 def draw():
