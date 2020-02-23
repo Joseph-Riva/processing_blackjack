@@ -13,6 +13,7 @@ players = []
 currentPlayer = None
 georgiaFont = None
 faceDownCard = None
+playerTurn = True
 
 temporaryDraw = []
 dealerWait = 0
@@ -43,7 +44,8 @@ def setupCards():
             cardsFull.append(Card(value, suit))
 
 def shuffleDeck():
-    global deck
+    global deck, playerTurn
+    playerTurn = True
     deck = cardsFull[:]
     for i in range(len(deck)):
         swapIdx = int(random(0, len(deck)))
@@ -140,9 +142,7 @@ def takeDealerTurn():
             if dealer.handRank() == 0:
                 temporaryDraw.append({'draw': drawBust, 'time': int(2.5*frameRate)})
         else:
-            if curRank == 0:
-                temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
-            elif curRank < toBeat:
+            if curRank == 0 or curRank < toBeat:
                 temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
             elif curRank > toBeat:
                 temporaryDraw.append({'draw': drawDefeat, 'time': int(2.5*frameRate)})
@@ -150,10 +150,11 @@ def takeDealerTurn():
                 temporaryDraw.append({'draw': drawPush, 'time': int(2.5*frameRate)})
 
 def keyPressed():
-    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw
+    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw, playerTurn
     if currentPlayer is not None:
         player = players[currentPlayer]
         if player.isBust() or player.handValue() == 21 or key == 's':
+            playerTurn = False
             currentPlayer += 1
             if currentPlayer == len(players) - 1:
                 temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
@@ -178,6 +179,7 @@ def keyPressed():
                     return
 
     elif key == 's':
+        playerTurn = True
         temporaryDraw = []
         shuffleDeck()
         dealToPlayers()
@@ -188,8 +190,9 @@ def keyPressed():
         currentPlayer = 0
         
 def drawIntroScreen():
-    global currentPlayer, georgiaFont, temporaryDraw
+    global currentPlayer, georgiaFont, temporaryDraw, playerTurn
     if currentPlayer is None and not temporaryDraw:
+        playerTurn = False;
         textSize(50)
         fill(0)
         textAlign(CENTER)
@@ -212,7 +215,7 @@ def drawDeck():
         image(faceDownCard, (width//2+(width*.25)) -(2*i), imageH)
         
 def giveCard(player):
-    global deck, temporaryDraw, faceDownCard
+    global deck, temporaryDraw, faceDownCard, playerTurn
     card = deck.pop()
     player.cards.append(card)
     if player is dealer:
@@ -230,7 +233,7 @@ def giveCard(player):
     
 
 def drawingFunction():
-    global player, dealer, backgroundImage, temporaryDraw, counter
+    global player, dealer, backgroundImage, temporaryDraw, counter, playerTurn
     if counter == 0:
         load()
         counter = 10
@@ -238,6 +241,12 @@ def drawingFunction():
         counter -= 1
     background(backgroundImage)
     drawIntroScreen()
+    if playerTurn: 
+            fill(255)
+            textAlign(CENTER)
+            textSize(30)
+            text("Hit or Stand?", player.handPosition[0]+90, player.handPosition[1]-25)
+            textAlign(BASELINE)
     if currentPlayer is not None or temporaryDraw:
         drawDeck()
         player.display()

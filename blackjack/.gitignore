@@ -1,2 +1,3 @@
 *.class
+*.autosave
 __pycache__
