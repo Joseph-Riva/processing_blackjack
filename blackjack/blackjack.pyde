@@ -24,7 +24,7 @@ def passFunction():
     pass
 
 def setup():
-    global player, dealer, backgroundImage, players, georgiaFont
+    global player, dealer, backgroundImage, players, georgiaFont 
     fullScreen()
     frameRate(120)
     textSize(20)
