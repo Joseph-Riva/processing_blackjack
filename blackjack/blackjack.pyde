@@ -142,9 +142,7 @@ def takeDealerTurn():
             if dealer.handRank() == 0:
                 temporaryDraw.append({'draw': drawBust, 'time': int(2.5*frameRate)})
         else:
-            if curRank == 0:
-                temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
-            elif curRank < toBeat:
+            if curRank == 0 or curRank < toBeat:
                 temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
             elif curRank > toBeat:
                 temporaryDraw.append({'draw': drawDefeat, 'time': int(2.5*frameRate)})
