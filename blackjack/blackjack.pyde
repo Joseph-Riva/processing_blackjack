@@ -1,13 +1,16 @@
-from cards import Card, valueToFace, faceToValue
-from player import Player
+from cards import Card
+from player import Player, fontsize
 cardsFull = []
 deck = []
-player = Player((300, 200), 500)
+player = None
 
 def setup():
     global player
-    fullScreen()
+    size(1920, 955)
+    textSize(20)
     setupCards()
+    player = Player((displayWidth / 2 - 100, displayHeight - 350), 500)
+    dealToPlayer()
 
 def setupCards():
     global cardsFull
@@ -19,23 +22,28 @@ def setupCards():
 def shuffleDeck():
     global deck
     deck = cardsFull[:]
-    shuffle(deck)
-
-def shuffle(arr):
-    for i in range(len(arr)):
-        swapIdx = int(random(0, len(arr)))
-        arr[i], arr[swapIdx] = arr[swapIdx], arr[i]
-
-def dealToPlayer(player):
-    global deck
+    for i in range(len(deck)):
+        swapIdx = int(random(0, len(deck)))
+        deck[i], deck[swapIdx] = deck[swapIdx], deck[i]
+        
+def dealToPlayer():
+    global deck, player
     shuffleDeck()
     player.cards = deck[:2]
     deck = deck[2:]
-
+    
+def hitPlayer():
+    global deck, player
+    player.cards.append(deck.pop())
+    
 def keyPressed():
     global player
-    dealToPlayer(player)
-
+    if key == 'h':
+        hitPlayer()
+    else:
+        dealToPlayer()
+        
 def draw():
     global player
+    background(50, 220, 50)
     player.display()
