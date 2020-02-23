@@ -35,6 +35,7 @@ def on_mouse_event(identifier, dx, dy, isMouse):
 
 def on_tap_event(identifier, tapcode):
     data.append(tapcode)
+    print(tapcode)
 
 def on_air_gesture_event(identifier, air_gesture):
     print(" Air gesture: " + AirGestures(air_gesture).name)
