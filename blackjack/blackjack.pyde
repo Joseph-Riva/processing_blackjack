@@ -70,8 +70,7 @@ def drawBlackjack():
     boxW = 200
     boxH = 100
     fill(255)
-    rect(width/2-40, height/2, boxW, boxH, 7)
-    fill(255, 40, 40)
+    textSize(45)
     textAlign(CENTER, CENTER)
     text("Blackjack!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
@@ -80,8 +79,7 @@ def drawVictory():
     boxW = 200
     boxH = 100
     fill(255)
-    rect(width/2-40, height/2, boxW, boxH, 7)
-    fill(255, 40, 40)
+    textSize(45)
     textAlign(CENTER, CENTER)
     text("Win!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
@@ -89,9 +87,9 @@ def drawVictory():
 def drawDefeat():
     boxW = 200
     boxH = 100
+    textSize(45)
     fill(255)
-    rect(width/2-40, height/2, boxW, boxH, 7)
-    fill(255, 40, 40)
+    textSize(35)
     textAlign(CENTER, CENTER)
     text("Defeat!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
@@ -99,9 +97,8 @@ def drawDefeat():
 def drawPush():
     boxW = 200
     boxH = 100
+    textSize(45)
     fill(255)
-    rect(width/2-40, height/2, boxW, boxH, 7)
-    fill(255, 40, 40)
     textAlign(CENTER, CENTER)
     text("Push!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
@@ -109,9 +106,8 @@ def drawPush():
 def drawBust():
     boxW = 200
     boxH = 100
+    textSize(45)
     fill(255)
-    rect(width/2-40, height/2, boxW, boxH, 7)
-    fill(255, 40, 40)
     textAlign(CENTER, CENTER)
     text("Bust!", width/2-40, height/2, boxW, boxH)
     textAlign(BASELINE, BASELINE)
@@ -193,12 +189,13 @@ def drawIntroScreen():
     global currentPlayer, georgiaFont, temporaryDraw, playerTurn
     if currentPlayer is None and not temporaryDraw:
         playerTurn = False;
-        textSize(50)
+        textSize(100)
         fill(0)
         textAlign(CENTER)
-        text("Blackjack!", width // 2, 200)
+        text("Blackjack!", width // 2, height/2)
         textSize(30)
-        text("To start a game, press 'S'", width //2, 500)
+        fill(255)
+        text("To start a game, press 'S'", width //2, (height/2)+150)
         textAlign(BASELINE)
         textFont(georgiaFont)
 
@@ -231,7 +228,13 @@ def giveCard(player):
         mvCard = MovingCard(card.img, PVector(width//2+(width*.25),height//2-(height*.32)), PVector(player.handPosition[0]+(len(player.cards)-1)*(card.img.width+20),player.handPosition[1]), card.makeVisible) 
     temporaryDraw.append({'draw': mvCard, 'time': int(frameRate*1)})
     
-
+def drawMoney():
+    global player
+    fill(255)
+    textAlign(CENTER)
+    textSize(40)
+    text("Your Money: $"+ str(player.money), 200, 100)
+    textAlign(BASELINE)
 def drawingFunction():
     global player, dealer, backgroundImage, temporaryDraw, counter, playerTurn
     if counter == 0:
@@ -241,6 +244,11 @@ def drawingFunction():
         counter -= 1
     background(backgroundImage)
     drawIntroScreen()
+<<<<<<< Updated upstream
+=======
+    drawMoney()
+    print(playerTurn)
+>>>>>>> Stashed changes
     if playerTurn: 
             fill(255)
             textAlign(CENTER)
@@ -259,6 +267,7 @@ def drawingFunction():
             temporaryDraw.pop(i)
         
 def draw():
+    
     drawingFunction()
         
 add_library('net')

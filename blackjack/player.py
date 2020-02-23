@@ -57,6 +57,7 @@ class Player(object):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
             fill(255)
+            textSize(30)
             text(self.getHandStatus(), displayX - spacing*2, displayY + 50)
         
             
