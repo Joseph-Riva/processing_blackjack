@@ -31,6 +31,16 @@ class Player(object):
                 aces -= 1
                 total -= 10
         return total
+    
+    def getHandStatus(self):
+        handTotal = self.handValue()
+        if len(self.cards) == 2 and handTotal == 21:
+            return "Blackjack!"
+        elif handTotal > 21:
+            fill(255, 40, 40)
+            return "Bust!"
+        else:
+            return "Hand total: " + str(self.handValue())
         
     def display(self):
         displayX, displayY = self.handPosition
@@ -39,14 +49,8 @@ class Player(object):
             for i in range(len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX + i*spacing, displayY)
-        handTotal = self.handValue()
         fill(0, 0, 0)
-        if len(self.cards) == 2 and handTotal == 21:
-            text("Blackjack!", displayX, displayY - 25)
-        elif handTotal > 21:
-            fill(255, 40, 40)
-            text("Bust!", displayX, displayY - 25)
-        else:
-            text("Hand total: " + str(self.handValue()), displayX, displayY - 25)
+        text(self.getHandStatus(), displayX, displayY - 25)
+        
             
                 

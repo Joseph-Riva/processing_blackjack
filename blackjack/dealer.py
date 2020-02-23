@@ -16,6 +16,7 @@ class Dealer(Player):
         self.cardRevealed = False
         
     def display(self):
+        global faceDownCard
         displayX, displayY = self.handPosition
         if self.cards:
             spacing = self.cards[0].img.width + 20
@@ -24,6 +25,8 @@ class Dealer(Player):
                 image(faceDownCard, displayX + spacing, displayY)
             elif len(self.cards) > 0:
                 startIdx = 0
+                fill(0, 0, 0)
+                text(self.getHandStatus(), displayX, displayY + 27 + faceDownCard.height)
             for i in range(startIdx, len(self.cards)):
                 card = self.cards[i]
                 card.display(displayX - (i-1)*spacing, displayY)
