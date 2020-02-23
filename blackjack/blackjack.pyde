@@ -244,11 +244,7 @@ def drawingFunction():
         counter -= 1
     background(backgroundImage)
     drawIntroScreen()
-<<<<<<< Updated upstream
-=======
     drawMoney()
-    print(playerTurn)
->>>>>>> Stashed changes
     if playerTurn: 
             fill(255)
             textAlign(CENTER)
