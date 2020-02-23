@@ -3,6 +3,7 @@ from player import Player, fontsize
 from dealer import Dealer
 
 cardsFull = []
+counter = 0
 deck = []
 player = None
 backgroundImage = None
@@ -44,11 +45,13 @@ def shuffleDeck():
 
 def dealToPlayers():
     global deck, players, dealer, temporaryDraw
+    dealer.cardRevealed = False
     for i in range(2*len(players)):
         player = players.pop(0)
         player.cards = deck[:2]
         deck = deck[2:]
         players.append(player)
+    for player in players:
         if player.handRank() == 22:
             if player is dealer:
                 dealer.cardRevealed = True
@@ -62,22 +65,19 @@ def drawBlackjack():
     fill(255, 40, 40)
     textAlign(CENTER, CENTER)
     text("Blackjack!", width/2-40, height/2, boxW, boxH)
-    textAlign(BASELINE)
-    
-def hitPlayer():
-    global deck, player
-    card = deck.pop()
-    player.cards.append(card)
-    giveCard(player, card)
-    
-def hitDealer():
-    global deck, dealer
-    if(dealer.handValue() < 17):
-        card = deck.pop()
-        dealer.cards.append(card)
-        giveCard(dealer, card)
+    textAlign(BASELINE, BASELINE)
     
 
+def drawBust():
+    boxW = 200
+    boxH = 100
+    fill(255)
+    rect(width/2-40, height/2, boxW, boxH, 7)
+    fill(255, 40, 40)
+    textAlign(CENTER, CENTER)
+    text("Bust!", width/2-40, height/2, boxW, boxH)
+    textAlign(BASELINE, BASELINE)
+    
 def playOneGame():
     global players, deck, dealer
     for i in range(len(players)):
@@ -104,6 +104,8 @@ def keyPressed():
             player.cards.append(card)
             giveCard(player, card)
             if player.isBust() or player.handValue() == 21:
+                if player.isBust():
+                    temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
                 currentPlayer += 1
                 if currentPlayer == len(players):
                     currentPlayer = None
@@ -114,8 +116,8 @@ def keyPressed():
         currentPlayer = 0
         
 def drawIntroScreen():
-    global currentPlayer, georgiaFont
-    if currentPlayer is None:
+    global currentPlayer, georgiaFont, temporaryDraw
+    if currentPlayer is None and not temporaryDraw:
         textSize(50)
         fill(0)
         textAlign(CENTER)
@@ -136,17 +138,19 @@ def giveCard(player, card):
     
     
 def draw():
-    load()
-    global player, dealer, backgroundImage, temporaryDraw
-    #background(backgroundImage)
+    global player, dealer, backgroundImage, temporaryDraw, counter
+    if counter == 0:
+        load()
+        counter = 10
+    else:
+        counter -= 1
+    background(backgroundImage)
     drawIntroScreen()
-    if currentPlayer is not None:
-        drawDeck()
+    if currentPlayer is not None or temporaryDraw:
         player.display()
         dealer.display()
     for i in range(len(temporaryDraw) - 1,-1,-1):
         obj = temporaryDraw[i]
-        print(obj['time'])
         obj['time'] -= 1
         if not obj['time']:
             temporaryDraw.pop(i)
@@ -156,7 +160,7 @@ add_library('net')
 myClient = None
         
 def load():
-    global myClients
+    global myClients, players, dealer, deck, currentPlayer
     myClients.append(Client(this, "localhost", 5000))
     myClients[-1].write("GET / HTTP/1.1\r\n")
     myClients[-1].write("\r\n")
@@ -165,18 +169,24 @@ def load():
         if('[]' not in dataIn):
             try:
                 value = dataIn[dataIn.index('[') + 1:-1]
-                if (int(value) == 1):
-                    player.cards.append(deck.pop())
-                    if player.isBust() or player.handValue() == 21:
+                if currentPlayer is not None:
+                    player = players[currentPlayer]
+                    if int(value) == 2:
                         currentPlayer += 1
                         if currentPlayer == len(players):
                             currentPlayer = None
-                if(int(value) == 2):
-                    print("here")
-                    currentPlayer += 1
-                    if currentPlayer == len(players):
-                        currentPlayer = None
-                return
+                        else:
+                            player = players[currentPlayer]
+                    if int(value) == 1:
+                        player.cards.append(deck.pop())
+                        if player.isBust() or player.handValue() == 21:
+                            if player.isBust():
+                                temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+                            currentPlayer += 1
+                            if currentPlayer == len(players):
+                                currentPlayer = None
             except:
                 pass
+        myClients.pop(0)
+    while myClients and not myClients[0].active():
         myClients.pop(0)
