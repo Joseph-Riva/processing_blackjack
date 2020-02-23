@@ -3,14 +3,17 @@ from player import Player, fontsize
 cardsFull = []
 deck = []
 player = None
+backgroundImage = None
 
 def setup():
-    global player
+    global player, backgroundImage
     size(1920, 955)
     textSize(20)
     setupCards()
-    player = Player((displayWidth / 2 - 100, displayHeight - 350), 500)
+    player = Player((width / 2 - 100, height - 200), 500)
     dealToPlayer()
+    backgroundImage = loadImage('table.png')
+    backgroundImage.resize(width, height)
 
 def setupCards():
     global cardsFull
@@ -44,6 +47,7 @@ def keyPressed():
         dealToPlayer()
         
 def draw():
-    global player
-    background(50, 220, 50)
+    global player, backgroundImage
+    print(backgroundImage)
+    background(backgroundImage)
     player.display()
