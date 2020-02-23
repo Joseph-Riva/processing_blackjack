@@ -61,16 +61,18 @@ def resetHands():
         player.cards = []
 
 def dealToPlayers():
-    global deck, players, dealer, temporaryDraw
+    global deck, players, dealer, temporaryDraw, playerTurn, dealerWait
     dealer.cardRevealed = False
     resetHands()
     for i in range(2*len(players)):
         giveCard(players[i % len(players)])
     for player in players:
         if player.handRank() == 22:
-            if player is dealer:
-                dealer.cardRevealed = True
-            temporaryDraw.append({'draw': drawBlackjack, 'time': int(frameRate*2)})
+            dealer.cardRevealed = True
+            playerTurn = False
+            temporaryDraw.append({'draw': drawBlackjack, 'time': int(frameRate*2.5)})
+            dealerWait = int(frameRate*3)
+            temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*3.1)})
             
 def drawBlackjack():
     boxW = 200
@@ -78,7 +80,8 @@ def drawBlackjack():
     fill(255)
     textSize(45)
     textAlign(CENTER, CENTER)
-    text("Blackjack!", width/2-40, height/2, boxW, boxH)
+    #text("Blackjack!", width/2-40, height/2, boxW, boxH)
+    text("Blackjack!", width/2, height/2)
     textAlign(BASELINE, BASELINE)
     
 def drawVictory():
@@ -131,33 +134,51 @@ def takeDealerTurn():
                     tempDraw['time'] = int(frameRate*2.51)
                     dealerWait = int(frameRate*2.5)
             if dealer.handRank() == 0:
-                temporaryDraw.append({'draw': drawBust, 'time': int(2.5*frameRate)})
-                if toBeat == 22:
-                    players[0].money += 3*players[0].bet // 2
-                else:
-                    players[0].money += 2*players[0].bet
-                players[0].bet = min(500, players[0].money)
-                betting = True
-                shuffleDeck()
-                resetHands()
-                playerTurn = False
+                temporaryDraw.append({'draw': drawBust, 'time': int(1*frameRate)})
+                dealerWait = int(2.5*frameRate)
+                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(2.51*frameRate)})
         else:
             if curRank == 0 or curRank < toBeat:
-                temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
                 if toBeat == 22:
                     players[0].money += 3*players[0].bet // 2
                 else:
                     players[0].money += 2*players[0].bet
+                    temporaryDraw.append({'draw': drawVictory, 'time': int(2.5*frameRate)})
             elif curRank > toBeat:
                 temporaryDraw.append({'draw': drawDefeat, 'time': int(2.5*frameRate)})
             else:
                 temporaryDraw.append({'draw': drawPush, 'time': int(2.5*frameRate)})
                 players[0].money += players[0].bet
             players[0].bet = min(500, players[0].money)
-            betting = True
-            shuffleDeck()
-            resetHands()
-            playerTurn = False
+            dealerWait = int(2.5*frameRate)
+            temporaryDraw.append({'draw': resetAfterTime, 'time': int(2.51*frameRate)})
+
+def resetAfterTime():
+    global dealerWait, betting, playerTurn, players
+    dealerWait -= 1
+    if not dealerWait:
+        betting = True
+        shuffleDeck()
+        resetHands()
+        playerTurn = False
+        players[0].bet = min(500, players[0].money)
+        if players[0].bet == 0:
+            dealerWait = int(frameRate*4.9)
+            temporaryDraw.append({'draw': gameOver, 'time': int(5*frameRate)})
+            
+def gameOver():
+    global dealerWait, started
+    boxW = 200
+    boxH = 100
+    textSize(45)
+    fill(255)
+    textAlign(CENTER, CENTER)
+    text("You have run out of money!", width/2-40, height/2)
+    textAlign(BASELINE, BASELINE)
+    dealerWait -= 1
+    if not dealerWait:
+        betting = False
+        started = False
 
 def keyPressed():
     global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw, playerTurn, betting, started
@@ -166,6 +187,7 @@ def keyPressed():
     if not started:
         if key == 's':
             started = True
+            players[0].money = 5000
     elif betting:
         if key == 'h':
             playerTurn = True
@@ -180,12 +202,15 @@ def keyPressed():
                 temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
             currentPlayer = 0
         if key == 'w':
-            player.bet += 500
+            if player.bet == 1:
+                player.bet += 499
+            else:
+                player.bet += 500
             player.bet = min(player.bet, player.money)
         if key == 's':
             player.bet -= 500
-            player.bet = max(player.bet, 0)
-    else:
+            player.bet = max(player.bet, 1)
+    elif playerTurn:
         if currentPlayer is not None:
             player = players[currentPlayer]
             if player.isBust() or player.handValue() == 21 or key == 's':
