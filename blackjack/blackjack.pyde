@@ -124,7 +124,18 @@ def load():
         if('[]' not in dataIn):
             try:
                 value = dataIn[dataIn.index('[') + 1:-1]
+                if (int(value) == 1):
+                    player.cards.append(deck.pop())
+                    if player.isBust() or player.handValue() == 21:
+                        currentPlayer += 1
+                        if currentPlayer == len(players):
+                            currentPlayer = None
+                if(int(value) == 2):
+                    print("here")
+                    currentPlayer += 1
+                    if currentPlayer == len(players):
+                        currentPlayer = None
+                return
             except:
                 pass
-            print(value)
         myClients.pop(0)
