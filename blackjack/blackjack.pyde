@@ -9,9 +9,10 @@ backgroundImage = None
 dealer = None
 players = []
 currentPlayer = None
+georgiaFont = None
 
 def setup():
-    global player, dealer, backgroundImage, players
+    global player, dealer, backgroundImage, players, georgiaFont
     fullScreen()
     textSize(20)
     setupCards()
@@ -20,8 +21,8 @@ def setup():
     players = [player, dealer]
     backgroundImage = loadImage('table.png')
     backgroundImage.resize(width, height)
-    myFont = createFont("Georgia", 30)
-    textFont(myFont)
+    georgiaFont = createFont("Georgia", 30)
+    textFont(georgiaFont)
 
 def setupCards():
     global cardsFull
@@ -81,14 +82,24 @@ def keyPressed():
                 currentPlayer += 1
                 if currentPlayer == len(players):
                     currentPlayer = None
-                    return
+
     elif key == 's':
         shuffleDeck()
         dealToPlayers()
         currentPlayer = 0
         
+def drawIntroScreen():
+    global currentPlayer, georgiaFont
+    if currentPlayer is None:
+        textSize(40)
+        fill(0)
+        text("Blackjack!", width / 2 - 30*4, 200)
+        textFont(georgiaFont)
+        
 def draw():
     global player, dealer, backgroundImage
     background(backgroundImage)
-    player.display()
-    dealer.display()
+    drawIntroScreen()
+    if currentPlayer is not None:
+        player.display()
+        dealer.display()
