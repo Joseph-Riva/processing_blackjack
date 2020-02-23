@@ -254,7 +254,45 @@ def draw():
         
 add_library('net')
 myClient = None
-        
+
+def processTapInput(combo):
+    global players, dealer, deck, currentPlayer, dealerWait, temporaryDraw
+    if currentPlayer is not None:
+        player = players[currentPlayer]
+        if player.isBust() or player.handValue() == 21 or combo == 33:
+            currentPlayer += 1
+            if currentPlayer == len(players) - 1:
+                temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+                dealerWait = int(frameRate*2.5)
+                dealer.cardRevealed = True
+                takeDealerTurn()
+                currentPlayer = None
+                return
+            player = players[currentPlayer]
+        if combo & 0b01110:
+            giveCard(player)
+            if player.isBust() or player.handValue() == 21:
+                if player.isBust():
+                    temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
+                currentPlayer += 1
+                if currentPlayer == len(players) - 1:
+                    temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+                    dealerWait = int(frameRate*2.5)
+                    dealer.cardRevealed = True
+                    takeDealerTurn()
+                    currentPlayer = None
+                    return
+
+    elif combo == 2:
+        temporaryDraw = []
+        shuffleDeck()
+        dealToPlayers()
+        if players[0].handRank() == 22:
+            dealerWait = int(frameRate*2.5)
+            dealer.cardRevealed = True
+            temporaryDraw.append({'draw': takeDealerTurn, 'time': int(frameRate*2.51)})
+        currentPlayer = 0
+
 def load():
     global myClients, players, dealer, deck, currentPlayer
     myClients.append(Client(this, "localhost", 5000))
@@ -265,23 +303,10 @@ def load():
         if('[]' not in dataIn):
             try:
                 value = dataIn[dataIn.index('[') + 1:-1]
-                if currentPlayer is not None:
-                    player = players[currentPlayer]
-                    if int(value) == 2:
-                        currentPlayer += 1
-                        if currentPlayer == len(players):
-                            currentPlayer = None
-                        else:
-                            player = players[currentPlayer]
-                    if int(value) == 1:
-                        player.cards.append(deck.pop())
-                        if player.isBust() or player.handValue() == 21:
-                            if player.isBust():
-                                temporaryDraw.append({'draw': drawBust, 'time': int(2*frameRate)})
-                            currentPlayer += 1
-                            if currentPlayer == len(players):
-                                currentPlayer = None
+                print(type(value))
+                processTapInput(int(value))
             except:
+                print('boo')
                 pass
         myClients.pop(0)
     while myClients and not myClients[0].active():
